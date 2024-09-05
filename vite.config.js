@@ -1,15 +1,16 @@
-// vite.config.js
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
+// https://vitejs.dev/config/
 export default defineConfig({
+	plugins: [react()],
 	build: {
-		outDir: "build", // Adjust this to match your expected output directory
+		outDir: "build",
 		rollupOptions: {
 			output: {
 				manualChunks(id) {
-					// Example of chunking logic:
 					if (id.includes("node_modules")) {
-						return "vendor"; // All node_modules go to a single chunk named 'vendor'
+						return "vendor";
 					}
 				},
 			},
