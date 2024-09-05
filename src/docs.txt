@@ -1,0 +1,3 @@
+-- sidebar text primary color : #c2c6da
+
+--- main layout background-color: #f5f6fa
