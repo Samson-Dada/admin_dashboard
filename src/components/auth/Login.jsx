@@ -1,37 +1,23 @@
 import React, { useState } from "react";
-import { register } from "../../Services/authApiService";
-import { Link } from "react-router-dom";
-import { ROLE_ADMIN } from "../../config";
+import { login } from "../../Services/authService.js";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
-	const [fullName, setFullName] = useState("");
-	const [username, setUsername] = useState("");
-	const [phoneNumber, setPhoneNumber] = useState("");
 	const [password, setPassword] = useState("");
+	const navigate = useNavigate();
 
-	// {
-	//      "fullName": "Deo admin",
-	//     "email":"admin@dev.com" ,
-	//     "phoneNumber": "0987654321",
-	//     "username": "admin",
-	//     "password": "pass12345",
-	//     "role": "admin"
-	// }
-	const admin = ROLE_ADMIN;
 	const handleLogin = async (e) => {
 		e.preventDefault();
 		const loginData = { email, password };
-		try {
-			const response = await register(loginData);
 
-			// to check if the user is admin or not
+		try {
+			const response = await login(loginData);
 
 			const role = response.data.user.role ?? "";
-			if (role === "admin") {
+			if (role) {
 				console.log("Login successful:", response);
 
-				// Extract and store the token
 				const token = response.data.token;
 				localStorage.setItem("token", token);
 
@@ -45,16 +31,18 @@ const Login = () => {
 				localStorage.setItem("userInfo", JSON.stringify(userInfo));
 
 				console.log("User info stored successfully.");
-			} else if (role === "") {
-				console.error("error you are not authorized to access this page");
-			}
 
-			// Redirect to admin dashboard or another protected route
-			// window.location.href = "/admin/dashboard";
-			<Link></Link>;
+				if (role === "admin") {
+					navigate("/admin/dashboard");
+					navigate("/admin");
+				} else {
+					navigate("/user/home");
+				}
+			} else {
+				console.error("Unauthorized access.");
+			}
 		} catch (error) {
 			console.error("Login failed:", error);
-			// Handle login failure (e.g., show error message) ti user
 		}
 	};
 
@@ -98,6 +86,12 @@ const Login = () => {
 						Login
 					</button>
 				</form>
+				<div className="mt-4 text-center">
+					<span>Register as admin </span>
+					<Link to="/register" className="text-blue-500 hover:underline">
+						Sign Up
+					</Link>
+				</div>
 			</div>
 		</div>
 	);
